@@ -32,24 +32,20 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 
 
-function sendJSONXMLHTTPRequest(url, objects, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState==4) {
-            try {
-                if (xhr.status==200) {
-                    //XXX: parse some JSON from the request!
-                    //XXX: Pass the data to the callback!
-                }
-            } 
-            catch(e) {
-                alert('Error: ' + e.name);
-            }
-        }
-    };
-    //XXX: POST to a URL
-    //XXX: set the mimetype and the accept headers!
-    // Remember to use application/json !
+function sendJSONAJAXHTTPRequest(url, objects, callback) {
+    let init =  {
+                method='POST',
+                headers:{
+                   'Content-Type': 'application/json',
+                   'Accept':'application/json',
+                },
+                body=objects
+               }
+    let request = new Request(url, init);
+    fetch(request).then(function(request){
+        console.log("Successfully sent post");
+    }
+    );
 }
 
 
@@ -137,7 +133,9 @@ function getPosition(e) {
 function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
+    sendJSONAJAXHTTPRequest('entity/'+entity,data); 
     //XXX: Send a XHTML Request that updates the entity you just  modified!
+    
 
 }
 
@@ -186,7 +184,7 @@ mouse = (function() {
                 var y = pos[1];
 	        self.clicked = 1;
                 self.callListeners(self.mousedowners,x,y,self.clicked,e);
-                //addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+                addEntityWithoutName({'x':x,'y':y,'colour':'red'});
             }
         },
         mouseup: function(e) {
@@ -200,7 +198,7 @@ mouse = (function() {
 	        self.clicked = 0;
                 self.selected = -1;
                 self.callListeners(self.mouseuppers,x,y,self.clicked,e);
-                //addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+                addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
             }
         },
         touchstart: function(e) {
