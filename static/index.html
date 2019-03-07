@@ -34,12 +34,12 @@ var H = canvas.height = window.innerHeight-50;
 
 function sendJSONAJAXHTTPRequest(url, objects, callback) {
     let init =  {
-                method='POST',
+                method:'POST',
                 headers:{
                    'Content-Type': 'application/json',
                    'Accept':'application/json',
                 },
-                body=objects
+                body:objects
                }
     let request = new Request(url, init);
     fetch(request).then(function(request){
@@ -132,10 +132,7 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
-    sendJSONAJAXHTTPRequest('entity/'+entity,data); 
-    //XXX: Send a XHTML Request that updates the entity you just  modified!
-    
+    sendJSONAJAXHTTPRequest('entity/'+entity,data);     
 
 }
 
@@ -261,7 +258,25 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
     drawFrame();
+    getJSONAJAXrequest('/world');
 }
+
+function getJSONAJAXrequest(url, objects, callback) {
+    let init =  {
+                method:'GET',
+                headers:{
+                   'Content-Type': 'application/json',
+                   'Accept':'application/json',
+                },
+               }
+    let request = new Request(url, init);
+    fetch(request).then(function(request){
+        console.log("headers recieved");
+    }).then(function(request){
+        world = request.body;
+    });
+}
+
 
 // 30 frames per second
 setInterval( update, 1000/30.0);
