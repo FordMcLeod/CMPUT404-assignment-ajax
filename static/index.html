@@ -3,7 +3,7 @@
   <head> 
     <title>AJAX Assignment</title> 
     <meta charset="utf-8" /> 
-    <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
+    <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;', name='viewport' />
     <meta name="viewport" content="width=device-width" />
     <meta name="license" content="
         Copyright 2013 Abram Hindle
@@ -43,7 +43,7 @@ function sendJSONAJAXHTTPRequest(url, objects, callback) {
                }
     let request = new Request(url, init);
     fetch(request).then(function(request){
-        console.log("Successfully sent post");
+        // pass 
     }
     );
 }
@@ -68,10 +68,10 @@ function drawCircle(context,entity) {
 
 function prepEntity(entity) {
     if (!entity["colour"]) {
-        entity["colour"] = "#FF0000";
+        entity["colour"] = "#000F0F";
     }
     if (!entity["radius"]) {
-        entity["radius"] = 50;
+        entity["radius"] = 20;
     }
     return entity;
 }
@@ -132,7 +132,7 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    sendJSONAJAXHTTPRequest('http://127.0.0.1:5000/entity/'+entity,data);
+    sendJSONAJAXHTTPRequest('../entity/'+entity,data);
     drawNextFrame();
 }
 
@@ -246,20 +246,18 @@ mouse.mousedowners.push(function(x,y,clicked,e) {
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'burgundy'});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    addEntityWithoutName({'x':x,'y':y,'colour':'purple',
+                          'radius':2});
 });
 
 
 function update() {
-    //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    getJSONAJAXrequest('http://127.0.0.1:5000/world');
+    getJSONAJAXrequest('../world');
     drawFrame();
-    console.log(world);
 }
 
 function getJSONAJAXrequest(url, objects, callback) {
@@ -271,19 +269,14 @@ function getJSONAJAXrequest(url, objects, callback) {
                 },
                }
     let request = new Request(url, init);
-    fetch(request).then(function(response){
-        console.log("got headers!");
-        return response.blob;
-    }).then(function(blob){
-        console.log("got blob!");
-        world = blob;
-        drawNextFrame();
-    });
+    fetch(request)
+    .then(response => response.json()) //response type
+    .then(data => {world=data;drawNextFrame();}) //log the data;
 }
 
 
 // 30 frames per second
-setInterval( update, 5000);
+setInterval( update, 1000/30);
 
 
 
